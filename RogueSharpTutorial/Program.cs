@@ -1,16 +1,20 @@
-﻿using OpenTK.Graphics.ES10;
+﻿using System;
+using System.Data;
+using OpenTK.Graphics.ES10;
 using OpenTK.Input;
 using RLNET;
+using RogueSharp.Random;
 using RogueSharpTutorial.Core;
-using SadConsole;
 using SadConsoleGame.Systems;
+using Console = SadConsole.Console;
 
 namespace SadConsoleGame
 {
     public class Game
     {
         private static bool renderRequired = false;
-        
+        public static Systems.CommandSystem CommandSystem { get; private set; }
+
         // The screen height and width are in number of tiles
         private static readonly int _screenWidth = 100;
         private static readonly int _screenHeight = 70;
@@ -36,6 +40,8 @@ namespace SadConsoleGame
         private static readonly int _inventoryHeight = 11;
         private static RLConsole _inventoryConsole;
         
+        public static IRandom Random { get; private set; }
+        
         enum _gameStates
         {
             MainMenu,
@@ -51,18 +57,21 @@ namespace SadConsoleGame
 
         public static void Main()
         {
+            int seed = (int) DateTime.UtcNow.Ticks;
+            Random = new DotNetRandom(seed);
+
             //this must be the exact name of the bitmap font file we are using
             var fontFileName = "terminal8x8.png";
             //this title will appear at the top of the console window
-            var consoleTitle = "Roguesharp Tutorial - Level 1";
+            var consoleTitle = "Roguesharp Tutorial - Level 1 - Seed {seed}";
             _rootConsole = new RLRootConsole(fontFileName, _screenWidth, _screenHeight, 8, 8, 1f, consoleTitle);
             
             player = new Player();
-            MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight);
+            MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight, 20, 13, 7);
             DungeonMap = mapGenerator.CreateMap();
             DungeonMap.updatePlayerFieldOfView();
 
-            
+            CommandSystem = new CommandSystem();
             
             _mapConsole = new RLConsole( _mapWidth, _mapHeight );
             _messageConsole = new RLConsole( _messageWidth, _messageHeight );
@@ -102,6 +111,7 @@ namespace SadConsoleGame
         private static void OnRootConsoleUpdate(object sender, UpdateEventArgs e)
         {
             bool didUnitAct = false;
+            bool didPlayerAct = false;
             bool didMenuUpdate = false;
             RLKeyPress keyPress = _rootConsole.Keyboard.GetKeyPress();
             
@@ -118,15 +128,66 @@ namespace SadConsoleGame
                         _currentState = _gameStates.InGame;
                         //on a state change we need to redraw the interface
                         guiRedraw = true;
+                    } 
+                    else if (keyPress.Key == RLKey.Up)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Directions.Up);
                     }
+                    else if (keyPress.Key == RLKey.Down)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Directions.Down);
+                    }
+                    else if (keyPress.Key == RLKey.Left)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Directions.Left);
+                    }
+                    else if (keyPress.Key == RLKey.Right)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Directions.Right);
+                    } else if (keyPress.Key == RLKey.Escape)
+                    {
+                        _rootConsole.Close();
+                    }
+                }
+
+                if (didPlayerAct)
+                {
+                    renderRequired = true;
+                    mapRedraw = true;
                 }
 
                 //draw menu
             } else if (_currentState == _gameStates.InGame)
             {
-                // Set background color and text for each console 
-                // so that we can verify they are in the correct positions
+                //handle player input when we're ingame
                 
+                if (keyPress != null)
+                {
+                    switch (keyPress.Key)
+                    {
+                        case RLKey.Up:
+                            didPlayerAct = CommandSystem.MovePlayer(Directions.Up);
+                            break;
+                        case RLKey.Down:
+                            didPlayerAct = CommandSystem.MovePlayer(Directions.Down);
+                            break;
+                        case RLKey.Left:
+                            didPlayerAct = CommandSystem.MovePlayer(Directions.Left);
+                            break;
+                        case RLKey.Right:
+                            didPlayerAct = CommandSystem.MovePlayer(Directions.Right);
+                            break;
+                        case RLKey.Escape:
+                            _rootConsole.Close();
+                            break;
+                    }
+                }
+
+                if (didPlayerAct)
+                {
+                    renderRequired = true;
+                    mapRedraw = true;
+                }
                 //draw gui if not drawn
                 if (guiRedraw)
                 {

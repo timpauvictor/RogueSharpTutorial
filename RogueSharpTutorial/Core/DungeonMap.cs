@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using RLNET;
 using RogueSharp;
 using SadConsoleGame;
@@ -18,10 +19,12 @@ namespace RogueSharpTutorial.Core
     {
 
         private readonly FieldOfView<DungeonCell> _fieldOfView;
+        public List<Rectangle> Rooms;
 
         public DungeonMap()
         {
             _fieldOfView = new FieldOfView<DungeonCell>(this);
+            Rooms = new List<Rectangle>();
         }
 
         public bool IsExplored(int x, int y)
@@ -50,6 +53,35 @@ namespace RogueSharpTutorial.Core
                 }
             }
             
+        }
+
+        public bool SetActorPosition(Actor actor, int in_x, int in_y)
+        {
+            DungeonCell x = GetCell(in_x, in_y);
+            if (GetCell(in_x, in_y).IsWalkable)
+            {
+                SetIsWalkable(actor.X, actor.Y, true);
+                //update actor position
+                actor.X = in_x;
+                actor.Y = in_y;
+                //the new cell the actor is on is now not walkable
+                SetIsWalkable(actor.X, actor.Y, false);
+                //don't forget to update the field of view if we just repositioned the player
+                if (actor is Player)
+                {
+                    updatePlayerFieldOfView();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public void SetIsWalkable(int x, int y, bool isWalkable)
+        {
+            DungeonCell cell = GetCell(x, y);
+            SetCellProperties(cell.X, cell.Y, cell.IsTransparent, isWalkable, cell.IsExplored);
         }
 
         public bool IsInFov(int x, int y)
