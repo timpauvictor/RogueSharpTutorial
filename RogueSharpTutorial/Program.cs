@@ -14,6 +14,8 @@ namespace SadConsoleGame
     {
         private static bool renderRequired = false;
         public static Systems.CommandSystem CommandSystem { get; private set; }
+        public static MessageLog MessageLog { get; private set; }
+        public static Player Player { get; set; }
 
         // The screen height and width are in number of tiles
         private static readonly int _screenWidth = 100;
@@ -57,8 +59,11 @@ namespace SadConsoleGame
 
         public static void Main()
         {
+            MessageLog = new MessageLog();
+            
             int seed = (int) DateTime.UtcNow.Ticks;
             Random = new DotNetRandom(seed);
+            MessageLog.Add($"Level created with seed {seed}");
 
             //this must be the exact name of the bitmap font file we are using
             var fontFileName = "terminal8x8.png";
@@ -66,10 +71,11 @@ namespace SadConsoleGame
             var consoleTitle = "Roguesharp Tutorial - Level 1 - Seed {seed}";
             _rootConsole = new RLRootConsole(fontFileName, _screenWidth, _screenHeight, 8, 8, 1f, consoleTitle);
             
-            player = new Player();
+            
             MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight, 20, 13, 7);
             DungeonMap = mapGenerator.CreateMap();
             DungeonMap.updatePlayerFieldOfView();
+            MessageLog.Add($"Map generated and player added");
 
             CommandSystem = new CommandSystem();
             
@@ -88,12 +94,6 @@ namespace SadConsoleGame
             renderRequired = true;
             
             _rootConsole.Run();
-        }
-
-        public static Player player
-        {
-            get;
-            private set;
         }
 
         public static DungeonMap DungeonMap
@@ -211,8 +211,9 @@ namespace SadConsoleGame
 
                 if (mapRedraw)
                 {
+                    MessageLog.Draw(_messageConsole);
                     DungeonMap.Draw(_mapConsole);
-                    player.Draw(_mapConsole, DungeonMap);
+                    Player.Draw(_mapConsole, DungeonMap);
                     renderRequired = true;
                     mapRedraw = false;
                 }
@@ -222,7 +223,6 @@ namespace SadConsoleGame
 
         private static void OnRootConsoleRender(object sender, UpdateEventArgs e)
         {
-
             if (renderRequired)
             {
                 // Blit the sub consoles to the root console in the correct locations

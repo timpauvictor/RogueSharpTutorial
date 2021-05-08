@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using OpenTK.Graphics.ES20;
 using RogueSharp;
 using RogueSharpTutorial.Core;
@@ -54,19 +55,74 @@ namespace SadConsoleGame.Systems
 
             foreach (Rectangle room in _map.Rooms)
             {
-                createRoom(room);
+                CreateRoom(room);
             }
+            
+            //start at r = 1 because we don't want to do anything to the first room
+            //this is because we connect the second room to the origin of the first room
+            //on the first pass
+            for (int r = 1; r < _map.Rooms.Count; r++)
+            {
+                int previousRoomX = _map.Rooms[r - 1].Center.X;
+                int previousRoomY = _map.Rooms[r - 1].Center.Y;
 
+                int currentRoomX = _map.Rooms[r].Center.X;
+                int currentRoomY = _map.Rooms[r].Center.Y;
+                
+                //give a 50/50 chance of which direction to start with (vertical or horizontal)
+                if (Game.Random.Next(1, 2) == 1)
+                {
+                    CreateHorizontalTunnel(previousRoomX, currentRoomX, previousRoomY);
+                    
+                    CreateVerticalTunnel(previousRoomY, currentRoomY, previousRoomX);
+                }
+                else
+                {
+                    CreateVerticalTunnel(previousRoomY, currentRoomY, previousRoomX);
+                    CreateHorizontalTunnel(previousRoomX, currentRoomX, previousRoomY);
+                }
+            }
+            
+            PlacePlayer();
             return _map;
         }
 
-        private void createRoom(Rectangle room)
+        private void PlacePlayer()
+        {
+            Player player = Game.Player;
+            if (player == null)
+            {
+                player = new Player();
+            }
+
+            player.X = _map.Rooms[0].Center.X;
+            player.Y = _map.Rooms[0].Center.Y;
+            
+            _map.AddPlayer( player );
+        }
+
+        private void CreateVerticalTunnel(int yStart, int yEnd, int xPosition)
+        {
+            for (int y = Math.Min(yStart, yEnd); y <= Math.Max(yStart, yEnd); y++)
+            {
+                _map.SetCellProperties(xPosition, y, true, true, false);
+            }
+        }
+        private void CreateHorizontalTunnel(int xStart, int xEnd, int yPosition)
+        {
+            for (int x = Math.Min(xStart, xEnd); x <= Math.Max(xStart, xEnd); x++)
+            {
+                _map.SetCellProperties(x, yPosition, true, true, false);
+            }
+        }
+
+        private void CreateRoom(Rectangle room)
         {
             for (int x = room.Left + 1; x < room.Right; x++)
             {
                 for (int y = room.Top + 1; y < room.Bottom; y++)
                 {
-                    _map.SetCellProperties(x, y, true, true, true);
+                    _map.SetCellProperties(x, y, true, true, false);
                 }
             }
         }

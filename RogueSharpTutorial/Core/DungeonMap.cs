@@ -39,9 +39,16 @@ namespace RogueSharpTutorial.Core
             this[x, y].IsExplored = in_isExplored;
         }
 
+        public void AddPlayer(Player in_player)
+        {
+            Game.Player = in_player;
+            SetIsWalkable(in_player.X, in_player.Y, false);
+            updatePlayerFieldOfView();
+        }
+
         public void updatePlayerFieldOfView()
         {
-            Player player = Game.player;
+            Player player = Game.Player;
             //compute fov based on player awareness and location
             ComputeFov(player.X, player.Y, player.Awareness, true);
             //mark all cells in field of view as having been explored
@@ -49,7 +56,7 @@ namespace RogueSharpTutorial.Core
             {
                 if (IsInFov(cell.X, cell.Y))
                 {
-                    SetCellProperties(cell.X, cell.Y, cell.IsTransparent, cell.IsWalkable, cell.IsExplored);
+                    SetCellProperties(cell.X, cell.Y, cell.IsTransparent, cell.IsWalkable, true);
                 }
             }
             
