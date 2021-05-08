@@ -207,7 +207,7 @@ namespace SadConsoleGame
                 if (mapRedraw)
                 {
                     MessageLog.Draw(_messageConsole);
-                    DungeonMap.Draw(_mapConsole);
+                    DungeonMap.Draw(_mapConsole, _statConsole);
                     Player.Draw(_mapConsole, DungeonMap);
                     Player.DrawStats(_statConsole);
                     renderRequired = true;
@@ -235,6 +235,8 @@ namespace SadConsoleGame
                 _rootConsole.Draw();
 
                 renderRequired = false;
+                guiRedraw = true;
+                mapRedraw = true;
             }
         }
     }

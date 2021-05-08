@@ -121,7 +121,7 @@ namespace RogueSharpTutorial.Core
         }
         
         //IDrawable
-        public RLColor Color { get; set; }
+        public RLColor ActorColor { get; set; }
         public char Symbol { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
@@ -137,11 +137,11 @@ namespace RogueSharpTutorial.Core
             //only draw the actor when in fov
             if (in_map.IsInFov(X, Y))
             {
-                in_console.Set(X, Y, Color, Colors.FloorBackgroundFov, Symbol);
+                in_console.Set(X, Y, ActorColor, Colors.FloorBackgroundFov, Symbol);
             }
             else
             {
-                in_console.Set(X, Y, Color, Colors.FloorBackgroundFov, '.');
+                in_console.Set(X, Y, ActorColor, Colors.FloorBackgroundFov, '.');
             }
         }
     }

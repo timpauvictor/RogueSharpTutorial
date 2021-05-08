@@ -9,7 +9,7 @@ namespace RogueSharpTutorial.Core
             Attack = 2;
             AttackChance = 50;
             Awareness = 15;
-            Color = Colors.Player;
+            ActorColor = Colors.Player;
             Defense = 2;
             DefenseChance = 40;
             Gold = 0;

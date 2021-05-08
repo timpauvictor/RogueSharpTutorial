@@ -103,7 +103,7 @@ namespace RogueSharpTutorial.Core
             return _fieldOfView.ComputeFov(in_xOrigin, in_yOrigin, in_radius, in_lightWalls);
         }
         
-        public void Draw(RLConsole in_mapConsole)
+        public void Draw(RLConsole in_mapConsole, RLConsole in_statConsole)
         {
             //the draw method will be called each time the map is updated
             //it will render all of the symbols/colors for each cell to the subconsole
@@ -113,9 +113,16 @@ namespace RogueSharpTutorial.Core
                 SetConsoleSymbolForCell(in_mapConsole, cell);
             }
 
+            int i = 0;
             foreach (var monster in _monsters)
             {
                 monster.Draw(in_mapConsole, this);
+
+                if (IsInFov(monster.X, monster.Y))
+                {
+                    monster.DrawStats(in_statConsole, i);
+                    i++;
+                }
             }
         }
         
