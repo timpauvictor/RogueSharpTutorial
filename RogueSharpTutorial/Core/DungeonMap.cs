@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using RLNET;
 using RogueSharp;
 using SadConsoleGame;
@@ -121,6 +122,7 @@ namespace RogueSharpTutorial.Core
                 if (IsInFov(monster.X, monster.Y))
                 {
                     monster.DrawStats(in_statConsole, i);
+                    Game.guiRedraw = true;
                     i++;
                 }
             }
@@ -165,6 +167,17 @@ namespace RogueSharpTutorial.Core
         {
             _monsters.Add(monster);
             SetIsWalkable(monster.X, monster.Y, false);
+        }
+
+        public void RemoveMonster(Monster in_monster)
+        {
+            _monsters.Remove(in_monster);
+            SetIsWalkable(in_monster.X, in_monster.Y, true);
+        }
+
+        public Monster GetMonsterAt(int searchX, int searchY)
+        {
+            return _monsters.FirstOrDefault(m => m.X == searchX && m.Y == searchY);
         }
         
         //look for a random location that is inside a room and is walkable

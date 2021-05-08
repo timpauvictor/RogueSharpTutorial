@@ -52,8 +52,8 @@ namespace SadConsoleGame
         }
 
 
-        private static bool guiRedraw = false;
-        private static bool mapRedraw = false;
+        public static bool guiRedraw = false;
+        public static bool mapRedraw = false;
         private static _gameStates _currentState;
         private Logger _logger;
 
@@ -192,11 +192,15 @@ namespace SadConsoleGame
                     _mapConsole.Clear();
                     _mapConsole.SetBackColor( 0, 0, _mapWidth, _mapHeight, Colors.FloorBackground );
                     mapRedraw = true;
- 
+                    
+                    _messageConsole.Clear();
                     _messageConsole.SetBackColor( 0, 0, _messageWidth, _messageHeight, Swatch.DbDeepWater );
- 
+                    
+                    
+                    _statConsole.Clear();
                     _statConsole.SetBackColor( 0, 0, _statWidth, _statHeight, Swatch.DbOldStone );
- 
+                    
+                    _inventoryConsole.Clear();
                     _inventoryConsole.SetBackColor( 0, 0, _inventoryWidth, _inventoryHeight, Swatch.DbWood );
                     _inventoryConsole.Print( 1, 1, "Inventory", Colors.TextHeading );
                     
