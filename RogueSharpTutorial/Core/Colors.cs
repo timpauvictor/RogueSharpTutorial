@@ -5,6 +5,8 @@ namespace RogueSharpTutorial.Core
     public class Colors
     {
         public static RLColor Player = Swatch.DbLight;
+
+        public static RLColor KoboldColour = Swatch.DbBrightWood;
         
         public static RLColor FloorBackground = RLColor.Black;
         public static RLColor Floor = Swatch.AlternateDarkest;

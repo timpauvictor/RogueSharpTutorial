@@ -79,13 +79,11 @@ namespace SadConsoleGame
 
             CommandSystem = new CommandSystem();
             
+            // Initialize the sub consoles that we will Blit to the root console
             _mapConsole = new RLConsole( _mapWidth, _mapHeight );
             _messageConsole = new RLConsole( _messageWidth, _messageHeight );
             _statConsole = new RLConsole( _statWidth, _statHeight );
             _inventoryConsole = new RLConsole( _inventoryWidth, _inventoryHeight );
-            // Initialize the sub consoles that we will Blit to the root console
-            _mapConsole = new RLConsole(_mapWidth, _mapHeight);
-            _messageConsole = new RLConsole(_messageWidth, _messageHeight);
             //set up a handler for the update event
             _rootConsole.Update += OnRootConsoleUpdate;
             _rootConsole.Render += OnRootConsoleRender;
@@ -193,14 +191,11 @@ namespace SadConsoleGame
                 {
                     _mapConsole.Clear();
                     _mapConsole.SetBackColor( 0, 0, _mapWidth, _mapHeight, Colors.FloorBackground );
-                    _mapConsole.Print(1, 1, "Map", Colors.TextHeading);
                     mapRedraw = true;
  
                     _messageConsole.SetBackColor( 0, 0, _messageWidth, _messageHeight, Swatch.DbDeepWater );
-                    _messageConsole.Print( 1, 1, "Messages", Colors.TextHeading );
  
                     _statConsole.SetBackColor( 0, 0, _statWidth, _statHeight, Swatch.DbOldStone );
-                    _statConsole.Print( 1, 1, "Stats", Colors.TextHeading );
  
                     _inventoryConsole.SetBackColor( 0, 0, _inventoryWidth, _inventoryHeight, Swatch.DbWood );
                     _inventoryConsole.Print( 1, 1, "Inventory", Colors.TextHeading );
@@ -214,6 +209,7 @@ namespace SadConsoleGame
                     MessageLog.Draw(_messageConsole);
                     DungeonMap.Draw(_mapConsole);
                     Player.Draw(_mapConsole, DungeonMap);
+                    Player.DrawStats(_statConsole);
                     renderRequired = true;
                     mapRedraw = false;
                 }

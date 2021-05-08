@@ -20,11 +20,13 @@ namespace RogueSharpTutorial.Core
 
         private readonly FieldOfView<DungeonCell> _fieldOfView;
         public List<Rectangle> Rooms;
+        private readonly List<Monster> _monsters;
 
         public DungeonMap()
         {
             _fieldOfView = new FieldOfView<DungeonCell>(this);
             Rooms = new List<Rectangle>();
+            _monsters = new List<Monster>();
         }
 
         public bool IsExplored(int x, int y)
@@ -110,6 +112,11 @@ namespace RogueSharpTutorial.Core
             {
                 SetConsoleSymbolForCell(in_mapConsole, cell);
             }
+
+            foreach (var monster in _monsters)
+            {
+                monster.Draw(in_mapConsole, this);
+            }
         }
         
         private void SetConsoleSymbolForCell( RLConsole in_console, DungeonCell in_cell)
@@ -146,6 +153,46 @@ namespace RogueSharpTutorial.Core
                 }
             }
         }
+
+        public void AddMonster(Monster monster)
+        {
+            _monsters.Add(monster);
+            SetIsWalkable(monster.X, monster.Y, false);
+        }
+        
+        //look for a random location that is inside a room and is walkable
+        public Point GetRandomWalkableLocationInRoom(Rectangle room)
+        {
+            if (DoesRoomHaveWalkableSpace(room))
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    int x = Game.Random.Next(1, room.Width - 2) + room.X;
+                    int y = Game.Random.Next(1, room.Height - 2) + room.Y;
+                    if (IsWalkable(x, y))
+                    {
+                        return new Point(x, y);
+                    }
+                }
+            }
+            //if we didn't find a walkable location in the room we should return null
+            return new Point(-1, -1);
+        }
+        
+        //iterate through each cell in a room and return true if any are walkable
+        public bool DoesRoomHaveWalkableSpace(Rectangle room)
+        {
+            for (int x = 1; x <= room.Width - 2; x++) //- 2 for one wall on each side
+            {
+                for (int y = 1; y <= room.Height - 2; y++)
+                {
+                    if (IsWalkable(x + room.X, y + room.Y))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
-    
 }

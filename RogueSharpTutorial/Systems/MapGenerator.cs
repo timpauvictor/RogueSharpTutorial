@@ -2,6 +2,7 @@
 using System.Linq;
 using OpenTK.Graphics.ES20;
 using RogueSharp;
+using RogueSharp.DiceNotation;
 using RogueSharpTutorial.Core;
 using SadConsole.Effects;
 
@@ -84,6 +85,7 @@ namespace SadConsoleGame.Systems
             }
             
             PlacePlayer();
+            PlaceMonsters();
             return _map;
         }
 
@@ -123,6 +125,31 @@ namespace SadConsoleGame.Systems
                 for (int y = room.Top + 1; y < room.Bottom; y++)
                 {
                     _map.SetCellProperties(x, y, true, true, false);
+                }
+            }
+        }
+
+        private void PlaceMonsters()
+        {
+            foreach (var room in _map.Rooms)
+            {
+                if (Dice.Roll("1D10") < 7)
+                {
+                    var numberOfMonsters = Dice.Roll("1D4");
+                    for (int i = 0; i < numberOfMonsters; i++)
+                    {
+                        //find a random walkable location in the room to place the monster
+                        Point randomRoomLocation = _map.GetRandomWalkableLocationInRoom(room);
+                        //it's possible that the room doesn't have space to place a monster
+                        //in that case we should skip creating it
+                        if (randomRoomLocation != new Point(-1, -1))
+                        {
+                            var monster = Kobold.Create(1);
+                            monster.X = randomRoomLocation.X;
+                            monster.Y = randomRoomLocation.Y;
+                            _map.AddMonster(monster);
+                        }
+                    }
                 }
             }
         }
