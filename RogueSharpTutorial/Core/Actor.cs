@@ -4,8 +4,16 @@ using SadConsoleGame.Interfaces;
 
 namespace RogueSharpTutorial.Core
 {
-    public class Actor: IActor, IDrawable
+    public class Actor: IActor, IDrawable, ISchedulable
     {
+        public int Time
+        {
+            get
+            {
+                return _speed;
+            }
+        }
+
         // IActor
         private int _attack;
         private int _attackChance;

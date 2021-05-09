@@ -14,6 +14,7 @@ namespace SadConsoleGame
     {
         private static bool renderRequired = false;
         public static Systems.CommandSystem CommandSystem { get; private set; }
+        public static SchedulingSystem SchedulingSystem { get; private set; }
         public static MessageLog MessageLog { get; private set; }
         public static Player Player { get; set; }
 
@@ -60,6 +61,8 @@ namespace SadConsoleGame
         public static void Main()
         {
             MessageLog = new MessageLog();
+            CommandSystem = new CommandSystem();
+            SchedulingSystem = new SchedulingSystem();
             
             int seed = (int) DateTime.UtcNow.Ticks;
             Random = new DotNetRandom(seed);
@@ -77,7 +80,6 @@ namespace SadConsoleGame
             DungeonMap.updatePlayerFieldOfView();
             MessageLog.Add($"Map generated and player added");
 
-            CommandSystem = new CommandSystem();
             
             // Initialize the sub consoles that we will Blit to the root console
             _mapConsole = new RLConsole( _mapWidth, _mapHeight );
@@ -127,65 +129,50 @@ namespace SadConsoleGame
                         //on a state change we need to redraw the interface
                         guiRedraw = true;
                     } 
-                    else if (keyPress.Key == RLKey.Up)
-                    {
-                        didPlayerAct = CommandSystem.MovePlayer(Directions.Up);
-                    }
-                    else if (keyPress.Key == RLKey.Down)
-                    {
-                        didPlayerAct = CommandSystem.MovePlayer(Directions.Down);
-                    }
-                    else if (keyPress.Key == RLKey.Left)
-                    {
-                        didPlayerAct = CommandSystem.MovePlayer(Directions.Left);
-                    }
-                    else if (keyPress.Key == RLKey.Right)
-                    {
-                        didPlayerAct = CommandSystem.MovePlayer(Directions.Right);
-                    } else if (keyPress.Key == RLKey.Escape)
-                    {
-                        _rootConsole.Close();
-                    }
-                }
-
-                if (didPlayerAct)
-                {
-                    renderRequired = true;
-                    mapRedraw = true;
                 }
 
                 //draw menu
             } else if (_currentState == _gameStates.InGame)
             {
                 //handle player input when we're ingame
-                
-                if (keyPress != null)
+
+                if (CommandSystem.isPlayerTurn)
                 {
-                    switch (keyPress.Key)
+                    if (keyPress != null)
                     {
-                        case RLKey.Up:
-                            didPlayerAct = CommandSystem.MovePlayer(Directions.Up);
-                            break;
-                        case RLKey.Down:
-                            didPlayerAct = CommandSystem.MovePlayer(Directions.Down);
-                            break;
-                        case RLKey.Left:
-                            didPlayerAct = CommandSystem.MovePlayer(Directions.Left);
-                            break;
-                        case RLKey.Right:
-                            didPlayerAct = CommandSystem.MovePlayer(Directions.Right);
-                            break;
-                        case RLKey.Escape:
-                            _rootConsole.Close();
-                            break;
+                        switch (keyPress.Key)
+                        {
+                            case RLKey.Up:
+                                didPlayerAct = CommandSystem.MovePlayer(Directions.Up);
+                                break;
+                            case RLKey.Down:
+                                didPlayerAct = CommandSystem.MovePlayer(Directions.Down);
+                                break;
+                            case RLKey.Left:
+                                didPlayerAct = CommandSystem.MovePlayer(Directions.Left);
+                                break;
+                            case RLKey.Right:
+                                didPlayerAct = CommandSystem.MovePlayer(Directions.Right);
+                                break;
+                            case RLKey.Escape:
+                                _rootConsole.Close();
+                                break;
+                        }
+
+                        if (didPlayerAct)
+                        {
+                            renderRequired = true;
+                            mapRedraw = true;
+                            CommandSystem.EndPlayerTurn();
+                        }
                     }
                 }
-
-                if (didPlayerAct)
+                else if (!CommandSystem.isPlayerTurn)
                 {
+                    CommandSystem.ActivateMonsters();
                     renderRequired = true;
-                    mapRedraw = true;
                 }
+
                 //draw gui if not drawn
                 if (guiRedraw)
                 {

@@ -1,10 +1,20 @@
 ﻿using System;
 using RLNET;
+using SadConsoleGame.Behaviours;
+using SadConsoleGame.Systems;
 
 namespace RogueSharpTutorial.Core
 {
     public class Monster : Actor
     {
+        public int? TurnsAlerted { get; set; }
+
+        public virtual void PerformAction(CommandSystem commandSystem)
+        {
+            var behaviour = new StandardMoveAndAttack();
+            behaviour.Act(this, commandSystem);
+        }
+
         public void DrawStats(RLConsole statConsole, int position)
         {
             //start at y=13 which is below the below stats

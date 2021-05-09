@@ -47,6 +47,7 @@ namespace RogueSharpTutorial.Core
             Game.Player = in_player;
             SetIsWalkable(in_player.X, in_player.Y, false);
             updatePlayerFieldOfView();
+            Game.SchedulingSystem.Add(in_player);
         }
 
         public void updatePlayerFieldOfView()
@@ -167,12 +168,14 @@ namespace RogueSharpTutorial.Core
         {
             _monsters.Add(monster);
             SetIsWalkable(monster.X, monster.Y, false);
+            Game.SchedulingSystem.Add(monster);
         }
 
         public void RemoveMonster(Monster in_monster)
         {
             _monsters.Remove(in_monster);
             SetIsWalkable(in_monster.X, in_monster.Y, true);
+            Game.SchedulingSystem.Remove(in_monster);
         }
 
         public Monster GetMonsterAt(int searchX, int searchY)

@@ -1,11 +1,54 @@
 ﻿using System.Text;
+using RogueSharp;
 using RogueSharp.DiceNotation;
 using RogueSharpTutorial.Core;
+using SadConsoleGame.Interfaces;
 
 namespace SadConsoleGame.Systems
 {
     public class CommandSystem
     {
+
+        public bool isPlayerTurn { get; set; }
+
+        public void EndPlayerTurn()
+        {
+            isPlayerTurn = false;
+        }
+
+        public void ActivateMonsters()
+        {
+            ISchedulable schedulable = Game.SchedulingSystem.Get();
+            if (schedulable is Player)
+            {
+                isPlayerTurn = true;
+                Game.SchedulingSystem.Add(Game.Player);
+            }
+            else
+            {
+                Monster monster = schedulable as Monster;
+
+                if (monster != null)
+                {
+                    monster.PerformAction(this);
+                    Game.SchedulingSystem.Add(monster);
+                }
+                
+                ActivateMonsters();
+            }
+        }
+
+        public void MoveMonster(Monster monster, ICell cell)
+        {
+            if (!Game.DungeonMap.SetActorPosition(monster, cell.X, cell.Y))
+            {
+                if (Game.Player.X == cell.X && Game.Player.Y == cell.Y)
+                {
+                    Attack(monster, Game.Player);
+                }
+            }
+        }
+
         public bool MovePlayer(Directions direction)
         {
             int playerX = Game.Player.X;
