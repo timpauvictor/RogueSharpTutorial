@@ -31,6 +31,7 @@ namespace RogueSharpTutorial
         private static RLConsole _inventoryConsole;
         private static RLRootConsole _rootConsole;
 
+        public static Player Player { get; set; }
         public static DungeonMap DungeonMap { get; private set; }
 
         public static void Main()
@@ -42,9 +43,13 @@ namespace RogueSharpTutorial
             // Tell RLNet to use the bitmap font that we specified and that each tile is 8 x 8 pixels
             _rootConsole = new RLRootConsole( fontFileName, _screenWidth, _screenHeight, 
                 8, 8, 1f, consoleTitle );
-            
+
+
+            Player = new Player();
             MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight);
             DungeonMap = mapGenerator.CreateMap();
+            DungeonMap.UpdatePlayerFieldOfView();
+            
             
             //instantiate the sub consoles we just made
             _mapConsole = new RLConsole( _mapWidth, _mapHeight );
@@ -84,6 +89,7 @@ namespace RogueSharpTutorial
         private static void OnRootConsoleRender( object sender, UpdateEventArgs e )
         {
             DungeonMap.Draw(_mapConsole);
+            Player.Draw(_mapConsole, DungeonMap);
             //blit the subconsoles to the root console in the correct order before we render
             RLConsole.Blit(_mapConsole, 0, 0, _mapWidth, _mapHeight, _rootConsole, 0, _inventoryHeight);
             RLConsole.Blit(_statConsole, 0, 0, _statWidth, _statHeight, _rootConsole, _mapWidth, 0);

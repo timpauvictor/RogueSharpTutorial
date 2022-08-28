@@ -20,7 +20,7 @@ public class DungeonMap : Map
         {
             return;
         }
-            
+
         //choose the cell based on what is walkable or not
         // . for floors
         // # for walls
@@ -45,6 +45,19 @@ public class DungeonMap : Map
             else
             {
                 console.Set(cell.X, cell.Y, Colors.Wall, Colors.WallBackground, '#');
+            }
+        }
+    }
+    
+    public void UpdatePlayerFieldOfView()
+    {
+        Player player = Program.Player;
+        ComputeFov(player.X, player.Y, player.Awareness, true);
+        foreach (Cell cell in GetAllCells())
+        {
+            if (IsInFov(cell.X, cell.Y))
+            {
+                SetCellProperties(cell.X, cell.Y, cell.IsTransparent, cell.IsWalkable, true);
             }
         }
     }
