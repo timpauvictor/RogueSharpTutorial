@@ -1,3 +1,4 @@
+using OpenTK.Graphics.OpenGL;
 using RLNET;
 using RogueSharp;
 
@@ -47,6 +48,36 @@ public class DungeonMap : Map
                 console.Set(cell.X, cell.Y, Colors.Wall, Colors.WallBackground, '#');
             }
         }
+    }
+
+    public bool setActorPosition(Actor actor, int x, int y)
+    {
+        //only allow actor placement if the cell is walkable
+        if (GetCell(x, y).IsWalkable)
+        {
+            //the cell we just walked on is now walkable again
+            SetIsWalkable(actor.X, actor.Y, true);
+            actor.X = x;
+            actor.Y = y;
+            SetIsWalkable(x, y, false);
+            
+            //don't forget to update player fov
+            
+            if (actor is Player)
+            {
+                UpdatePlayerFieldOfView();
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void SetIsWalkable(int x, int y, bool isWalkable)
+    {
+        Cell cell = GetCell(x, y);
+        SetCellProperties(x, y, cell.IsTransparent, isWalkable, cell.IsExplored);
     }
     
     public void UpdatePlayerFieldOfView()
