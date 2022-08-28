@@ -109,6 +109,11 @@ namespace RogueSharpTutorial
                     _rootConsole.Close();
                 }
             }
+            
+            if (didPlayerAct)
+            {
+                _renderRequired = true;
+            }
         }
  
         // Event handler for RLNET's Render event
