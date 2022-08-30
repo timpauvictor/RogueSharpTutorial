@@ -1,4 +1,5 @@
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using RLNET;
 using RogueSharp;
 
@@ -6,6 +7,22 @@ namespace RogueSharpTutorial.Core;
 
 public class DungeonMap : Map
 {
+
+    public List<Rectangle> Rooms;
+
+
+    public DungeonMap()
+    {
+        Rooms = new List<Rectangle>();
+    }
+
+    public void AddPlayer(Player player)
+    {
+        Program.Player = player;
+        SetIsWalkable(player.X, player.Y, false);
+        UpdatePlayerFieldOfView();
+    }
+
     public void Draw(RLConsole mapConsole)
     {
         mapConsole.Clear();

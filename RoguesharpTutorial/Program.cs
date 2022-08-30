@@ -1,4 +1,5 @@
 ﻿using RLNET;
+using RogueSharp.Random;
 using RogueSharpTutorial.Core;
 using RogueSharpTutorial.Systems;
 
@@ -34,6 +35,7 @@ namespace RogueSharpTutorial
         public static Player Player { get; set; }
         public static DungeonMap DungeonMap { get; private set; }
         private static bool _renderRequired = true;
+        public static IRandom Random { get; private set; }
         
         public static CommandSystem CommandSystem { get; private set; }
 
@@ -42,19 +44,20 @@ namespace RogueSharpTutorial
             // This must be the exact name of the bitmap font file we are using or it will error.
             string fontFileName = "terminal8x8.png";
             // The title will appear at the top of the console window
-            string consoleTitle = "RougeSharp V3 Tutorial - Level 1";
             // Tell RLNet to use the bitmap font that we specified and that each tile is 8 x 8 pixels
-            _rootConsole = new RLRootConsole( fontFileName, _screenWidth, _screenHeight, 
-                8, 8, 1f, consoleTitle );
 
+            int seed = (int)DateTime.UtcNow.Ticks;
+            Random = new DotNetRandom(seed);
 
-            Player = new Player();
             CommandSystem = new CommandSystem();
             
-            MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight);
+            MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight, 20, 13, 7);
             DungeonMap = mapGenerator.CreateMap();
             DungeonMap.UpdatePlayerFieldOfView();
             
+            string consoleTitle = $"RougeSharp V3 Tutorial - Level 1 - Seed {seed}";
+            _rootConsole = new RLRootConsole( fontFileName, _screenWidth, _screenHeight, 
+                8, 8, 1f, consoleTitle );
             
             //instantiate the sub consoles we just made
             _mapConsole = new RLConsole( _mapWidth, _mapHeight );
