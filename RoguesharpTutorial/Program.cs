@@ -38,6 +38,7 @@ namespace RogueSharpTutorial
         public static IRandom Random { get; private set; }
         
         public static CommandSystem CommandSystem { get; private set; }
+        public static MessageLog MessageLog { get; private set; }
 
         public static void Main()
         {
@@ -50,6 +51,9 @@ namespace RogueSharpTutorial
             Random = new DotNetRandom(seed);
 
             CommandSystem = new CommandSystem();
+            MessageLog = new MessageLog();
+            MessageLog.Add("The Rogue arrives on level 1");
+            MessageLog.Add($"Level created with seed {seed}");
             
             MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight, 20, 13, 7);
             DungeonMap = mapGenerator.CreateMap();
@@ -70,8 +74,6 @@ namespace RogueSharpTutorial
             // Set up a handler for RLNET's Render event
             _rootConsole.Render += OnRootConsoleRender;
             
-            _messageConsole.SetBackColor(0, 0, _messageWidth, _messageHeight, Swatch.DbDeepWater);
-            _messageConsole.Print(1, 1, "Messages", Colors.TextHeading);
             
             _statConsole.SetBackColor(0, 0, _statWidth, _statHeight, Swatch.DbOldStone);
             _statConsole.Print(1, 1, "Stats", Colors.TextHeading);
@@ -127,6 +129,7 @@ namespace RogueSharpTutorial
             {
                 DungeonMap.Draw(_mapConsole);
                 Player.Draw(_mapConsole, DungeonMap);
+                MessageLog.Draw(_messageConsole);
                 //blit the subconsoles to the root console in the correct order before we render
                 RLConsole.Blit(_mapConsole, 0, 0, _mapWidth, _mapHeight, _rootConsole, 0, _inventoryHeight);
                 RLConsole.Blit(_statConsole, 0, 0, _statWidth, _statHeight, _rootConsole, _mapWidth, 0);
