@@ -75,8 +75,6 @@ namespace RogueSharpTutorial
             _rootConsole.Render += OnRootConsoleRender;
             
             
-            _statConsole.SetBackColor(0, 0, _statWidth, _statHeight, Swatch.DbOldStone);
-            _statConsole.Print(1, 1, "Stats", Colors.TextHeading);
 
             _inventoryConsole.SetBackColor(0, 0, _inventoryWidth, _inventoryHeight, Swatch.DbWood);
             _inventoryConsole.Print(1, 1, "Inventory", Colors.TextHeading);
@@ -129,6 +127,7 @@ namespace RogueSharpTutorial
             {
                 DungeonMap.Draw(_mapConsole);
                 Player.Draw(_mapConsole, DungeonMap);
+                Player.DrawStats(_statConsole);
                 MessageLog.Draw(_messageConsole);
                 //blit the subconsoles to the root console in the correct order before we render
                 RLConsole.Blit(_mapConsole, 0, 0, _mapWidth, _mapHeight, _rootConsole, 0, _inventoryHeight);
