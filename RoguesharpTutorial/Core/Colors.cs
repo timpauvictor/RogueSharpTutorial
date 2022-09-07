@@ -17,5 +17,7 @@ namespace RogueSharpTutorial.Core
         public static RLColor TextHeading = Swatch.DbLight;
 
         public static RLColor Player = Swatch.DbLight;
+
+        public static RLColor KoboldColor = Swatch.DbBrightWood;
     }
 }

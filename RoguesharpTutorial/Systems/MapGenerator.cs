@@ -1,5 +1,6 @@
 using RogueSharp;
 using RogueSharpTutorial.Core;
+using RogueSharpTutorial.Monsters;
 
 namespace RogueSharpTutorial.Systems;
 
@@ -87,6 +88,7 @@ public class MapGenerator
         }
 
         PlacePlayer();
+        PlaceMonsters();
         return _map;
     }
     
@@ -130,5 +132,31 @@ public class MapGenerator
         player.Y = _map.Rooms[0].Center.Y;
         
         _map.AddPlayer(player);
+    }
+
+    private void PlaceMonsters()
+    {
+        foreach (Rectangle room in _map.Rooms)
+        {
+            //each room has a 60% chance of having a monster
+            if (Program.Random.Next(1, 10) <= 6)
+            {
+                var numberOfMonsters = Program.Random.Next(1, 4);
+                for (int i = 0; i < numberOfMonsters; i++)
+                {
+                    //get a random location in the room
+                    Point randomRoomLocation = _map.GetRandomWalkableLocationInRoom(room);
+                    
+                    //if the location is not already occupied
+                    if (randomRoomLocation != null)
+                    {
+                        var monster = Kobold.Create(1);
+                        monster.X = randomRoomLocation.X;
+                        monster.Y = randomRoomLocation.Y;
+                        _map.AddMonster(monster);
+                    }
+                }
+            }
+        }
     }
 }
